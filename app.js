@@ -205,7 +205,7 @@
       '<div class="brand"><img src="icons/icon.svg" alt="" width="64" height="64"><h1>תזרים משפחתי</h1></div>' +
       '<p class="muted">חיבור חד פעמי לגיליון. את הכתובת והקוד מקבלים בסוף ההתקנה של הסקריפט (או בקישור מהטלפון השני).</p>' +
       '<form id="setupForm" class="card form">' +
-      '<label>כתובת ה-API<input name="url" type="url" required placeholder="https://script.google.com/macros/s/.../exec" value="' + esc(p.url || '') + '" dir="ltr"></label>' +
+      '<label>כתובת ה-API<input name="url" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" required placeholder="https://script.google.com/macros/s/.../exec" value="' + esc(p.url || '') + '" dir="ltr"></label>' +
       '<label>קוד סודי<input name="secret" required autocomplete="off" value="' + esc(p.secret || '') + '" dir="ltr"></label>' +
       '<fieldset class="seg"><legend>מי משתמש בטלפון הזה?</legend>' +
       users.map(function (u, i) {
@@ -216,8 +216,19 @@
       '</form></section>';
   }
 
+  // מסיר רווחים ותווי כיוון נסתרים שנדבקים בהעתקה מטקסט עברי
+  function cleanInput(v) {
+    return String(v || '').replace(/[\s\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]+/g, '');
+  }
+
   function submitSetup(form) {
-    var url = form.url.value.trim(), secret = form.secret.value.trim(), user = form.user.value;
+    var url = cleanInput(form.url.value), secret = cleanInput(form.secret.value), user = form.user.value;
+    // כתובת שהודבקה בלי https:// או עם רווחים
+    if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url.replace(/^\/+/, '');
+    if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)) {
+      toast('הכתובת צריכה להתחיל ב-https://script.google.com ולהסתיים ב-exec', 'err');
+      return;
+    }
     var btn = form.querySelector('button');
     btn.disabled = true; btn.textContent = 'מתחבר...';
     state.cfg = { url: url, secret: secret, user: user };

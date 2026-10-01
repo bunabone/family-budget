@@ -17,6 +17,7 @@
     upload: null,
     addKind: 'expense',
     loading: false,
+    loadError: '',
     offline: false,
     openTx: null,
     showAllTx: false,
@@ -106,7 +107,7 @@
       return r.json();
     }, function (e) {
       clearTimeout(timer);
-      var err = new Error('אין חיבור לשרת');
+      var err = new Error(e && e.name === 'AbortError' ? 'השרת לא ענה תוך 45 שניות' : 'אין חיבור לשרת');
       err.network = true;
       throw err;
     }).then(function (j) {
@@ -122,9 +123,11 @@
       state.data = j.data;
       state.meta = { syncedAt: new Date().toISOString(), spreadsheetUrl: j.spreadsheetUrl };
       state.offline = false;
+      state.loadError = '';
       writeLS(LS_DATA, state.data);
       writeLS(LS_META, state.meta);
     }).catch(function (e) {
+      state.loadError = e.message || 'שגיאה לא ידועה';
       if (e.network) state.offline = true;
       else if (!silent) toast(e.message, 'err');
       if (e.code === 'auth') toast('הקוד הסודי לא נכון. אפשר לעדכן בהגדרות.', 'err');
@@ -177,7 +180,13 @@
       a.classList.toggle('active', a.getAttribute('data-view') === state.view);
     });
     if (!state.data) {
-      $app.innerHTML = '<div class="empty"><div class="spinner"></div><p>טוען נתונים מהגיליון...</p></div>';
+      // בלי נתונים שמורים: או טוענים עכשיו, או שהטעינה נכשלה ומראים למה
+      $app.innerHTML = state.loading || !state.loadError
+        ? '<div class="empty"><div class="spinner"></div><p>טוען נתונים מהגיליון...</p></div>'
+        : '<div class="empty"><p><strong>הטעינה מהגיליון נכשלה</strong></p>' +
+          '<p class="load-error">' + esc(state.loadError) + '</p>' +
+          '<p><button class="btn primary" type="button" data-act="refresh">לנסות שוב</button></p>' +
+          '<p><button class="btn" type="button" data-act="logout">התחברות מחדש</button></p></div>';
       return;
     }
     var v = { home: viewHome, upload: viewUpload, add: viewAdd, pots: viewPots, settings: viewSettings }[state.view];

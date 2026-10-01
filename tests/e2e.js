@@ -215,6 +215,27 @@ function assert(c, msg) { if (!c) throw new Error('נכשל: ' + msg); console.l
   const html = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8') + fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   assert(!/[—–]/.test(html), 'אין מקף ארוך בטקסט');
   assert(!errors.length, 'אין שגיאות בקונסול' + (errors.length ? ': ' + errors.join(' | ') : ''));
+  // טעינה ראשונה שנכשלת: מוצגת הודעה עם הסיבה וכפתור "לנסות שוב", לא גלגל טעינה אינסופי
+  const ctx3 = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'he-IL', serviceWorkers: 'block' });
+  await ctx3.addInitScript((cfg) => { if (!sessionStorage.seeded) { localStorage.setItem('fb_cfg', cfg); sessionStorage.seeded = 1; } }, JSON.stringify({ url: API, secret, user: 'עופר' }));
+  const p3 = await ctx3.newPage();
+  let failGetAll = true;
+  await p3.route(API, async (route) => {
+    const body = JSON.parse(route.request().postData());
+    const out = failGetAll && body.action === 'getAll'
+      ? JSON.stringify({ ok: false, error: 'שגיאת בדיקה בגיליון' })
+      : gas.doPost({ postData: { contents: route.request().postData() } }).text;
+    await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: out });
+  });
+  await p3.goto(base);
+  await p3.waitForSelector('.load-error');
+  assert((await p3.textContent('.load-error')).includes('שגיאת בדיקה בגיליון'), 'טעינה שנכשלה מציגה את הסיבה');
+  failGetAll = false;
+  await p3.click('.empty [data-act=refresh]');
+  await p3.waitForSelector('.hero');
+  assert(true, 'לנסות שוב טוען את הנתונים');
+  await ctx3.close();
+
   console.log('קריאות API:', calls, 'צילומים ב-', OUT);
   await browser.close();
   server.close();

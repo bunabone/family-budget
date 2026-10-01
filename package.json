@@ -1,0 +1,11 @@
+{
+  "name": "family-budget",
+  "version": "1.0.0",
+  "private": true,
+  "description": "תזרים משפחתי: PWA סטטית + Google Sheets דרך Apps Script",
+  "scripts": {
+    "test": "node --test tests/api.test.js tests/parse.test.js",
+    "e2e": "node tests/e2e.js",
+    "serve": "npx http-server -c-1 ."
+  }
+}

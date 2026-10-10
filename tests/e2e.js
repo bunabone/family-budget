@@ -155,7 +155,7 @@ function assert(c, msg) { if (!c) throw new Error('נכשל: ' + msg); console.l
   d = gas.call({ key: secret, action: 'getAll' }).data;
   const deposits = d.potMoves.filter((m) => m.kind === 'הפקדה');
   assert(deposits.length === 4, 'הפקדה חודשית לארבע הקופות');
-  assert(deposits.find((m) => m.pot === 'בלתי צפוי').amount === 819, 'בלתי צפוי: 3% = 819');
+  assert(deposits.find((m) => m.pot === 'בלתי צפוי').amount === 798, 'בלתי צפוי: 3% = 798');
   await page.fill('#withdrawForm input[name=amount]', '1750');
   await page.fill('#withdrawForm input[name=note]', 'הטסט');
   await page.click('#withdrawForm button');

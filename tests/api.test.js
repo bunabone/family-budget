@@ -12,9 +12,9 @@ test('setup יוצר לשוניות, נתוני פתיחה וקוד סודי', (
   const all = g.call({ key, action: 'getAll' });
   assert.ok(all.ok);
   const fixed = all.data.fixed.reduce((a, f) => a + f.amount, 0);
-  assert.strictEqual(Math.round(fixed * 100) / 100, 20065.91);
+  assert.strictEqual(Math.round(fixed * 100) / 100, 20337.91);
   const varBudget = all.data.categories.filter((c) => c.type === 'משתנה').reduce((a, c) => a + c.budget, 0);
-  assert.strictEqual(varBudget, 6531);
+  assert.strictEqual(varBudget, 7298);
   assert.strictEqual(all.data.income.reduce((a, i) => a + i.amount, 0), 9376);
   assert.ok(!all.data.settings.some((s) => s.key === 'secret'), 'הקוד הסודי לא נשלח לאפליקציה');
   // הרצה שנייה לא משכפלת

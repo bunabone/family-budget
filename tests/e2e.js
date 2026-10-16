@@ -154,8 +154,8 @@ function assert(c, msg) { if (!c) throw new Error('נכשל: ' + msg); console.l
   await page.waitForSelector('.done');
   d = gas.call({ key: secret, action: 'getAll' }).data;
   const deposits = d.potMoves.filter((m) => m.kind === 'הפקדה');
-  assert(deposits.length === 4, 'הפקדה חודשית לארבע הקופות');
-  assert(deposits.find((m) => m.pot === 'בלתי צפוי').amount === 798, 'בלתי צפוי: 3% = 798');
+  assert(deposits.length === 5, 'הפקדה חודשית לחמש הקופות שיש להן סכום');
+  assert(deposits.find((m) => m.pot === 'בלתי צפוי').amount === 829, 'בלתי צפוי: 3% = 829');
   await page.fill('#withdrawForm input[name=amount]', '1750');
   await page.fill('#withdrawForm input[name=note]', 'הטסט');
   await page.click('#withdrawForm button');

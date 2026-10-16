@@ -108,14 +108,14 @@ test('חישוב החודש: צריך עוד, חודש חלש, קופות ויע
   ];
   d.income.push({ kind: 'בפועל', month: '2026-10', name: 'הכנסה מעבודה', amount: 10000 });
   const s = Core.monthSummary(d, '2026-10');
-  assert.strictEqual(s.fixedTotal, 20065.91);
-  assert.strictEqual(s.costOfLiving, 26596.91);
+  assert.strictEqual(s.fixedTotal, 20337.91);
+  assert.strictEqual(s.costOfLiving, 27635.91);
   assert.strictEqual(s.varActual, 3700);
-  // תקציב משתנות 6531, סופר בפועל 3000 במקום 2748 => תחזית 6783
-  assert.strictEqual(s.varProjected, 6783);
+  // תקציב משתנות 7298, סופר בפועל 3000 מתחת לתקציב 3192 => תחזית = התקציב
+  assert.strictEqual(s.varProjected, 7298);
   assert.strictEqual(s.incomeTotal, 19376);
-  assert.strictEqual(s.needToClose, Core.round2(20065.91 + 6783 - 19376));
-  assert.strictEqual(s.savings, 798 + 1250);
+  assert.strictEqual(s.needToClose, Core.round2(20337.91 + 7298 - 19376));
+  assert.strictEqual(s.savings, 829 + 1250 + 3400);
   assert.strictEqual(s.categories.find((c) => c.name === 'סופר ומזון לבית').avg, 2000);
   d.settings.find((x) => x.key === 'weak_months').value = '2026-10';
   assert.strictEqual(Core.monthSummary(d, '2026-10').savings, 0);

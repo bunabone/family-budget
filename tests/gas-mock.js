@@ -81,7 +81,7 @@ function coerce(v) {
   return v;
 }
 
-function loadGas() {
+function loadGas(extraFiles) {
   const sheets = {};
   const order = [];
   const ss = {
@@ -115,7 +115,7 @@ function loadGas() {
     console
   };
   vm.createContext(ctx);
-  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'apps-script', 'Code.gs'), 'utf8'), ctx);
+  ['Code.gs'].concat(extraFiles || []).forEach((f) => vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'apps-script', f), 'utf8'), ctx));
   ctx._ss = ss;
   ctx.call = (body) => JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify(body) } }).text);
   return ctx;

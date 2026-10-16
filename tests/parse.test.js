@@ -115,7 +115,7 @@ test('חישוב החודש: צריך עוד, חודש חלש, קופות ויע
   assert.strictEqual(s.varProjected, 7298);
   assert.strictEqual(s.incomeTotal, 19376);
   assert.strictEqual(s.needToClose, Core.round2(20337.91 + 7298 - 19376));
-  assert.strictEqual(s.savings, 829 + 1250 + 3400);
+  assert.strictEqual(s.savings, 829 + 1250 + 3400 + 1100);
   assert.strictEqual(s.categories.find((c) => c.name === 'סופר ומזון לבית').avg, 2000);
   d.settings.find((x) => x.key === 'weak_months').value = '2026-10';
   assert.strictEqual(Core.monthSummary(d, '2026-10').savings, 0);

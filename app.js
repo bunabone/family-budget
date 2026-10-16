@@ -129,7 +129,8 @@
     }).catch(function (e) {
       state.loadError = e.message || 'שגיאה לא ידועה';
       if (e.network) state.offline = true;
-      else if (!silent) toast(e.message, 'err');
+      // גם ברענון שקט: שגיאה מהגיליון מוצגת, כדי שלא יוצגו נתונים ישנים בלי שיודעים
+      else if (e.code !== 'auth') toast('לא הצלחתי לרענן מהגיליון: ' + e.message, 'err');
       if (e.code === 'auth') toast('הקוד הסודי לא נכון. אפשר לעדכן בהגדרות.', 'err');
     }).then(function () {
       state.loading = false;
@@ -944,6 +945,12 @@
 
   window.addEventListener('hashchange', route);
   window.addEventListener('online', function () { if (state.cfg) refresh(true); });
+  // חזרה לאפליקציה שהייתה פתוחה ברקע (בעיקר באייפון): מרעננים, כדי ששינויים בגיליון יופיעו
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || !state.cfg || state.loading) return;
+    var last = state.meta.syncedAt ? new Date(state.meta.syncedAt).getTime() : 0;
+    if (Date.now() - last > 60000) refresh(true);
+  });
   window.addEventListener('offline', function () { state.offline = true; renderBanner(); });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {

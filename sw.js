@@ -1,5 +1,5 @@
 // מטמון לקבצי האפליקציה כדי שתיפתח גם בלי אינטרנט. הנתונים עצמם נשמרים ב-localStorage.
-var VERSION = 'fb-v3';
+var VERSION = 'fb-v4';
 var ASSETS = [
   './',
   'index.html',
